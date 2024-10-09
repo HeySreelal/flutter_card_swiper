@@ -1,3 +1,4 @@
+import 'package:flutter/animation.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_card_swiper/src/controller/controller_event.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,21 @@ void main() {
       );
 
       controller.swipe(direction);
+    });
+
+    test('SwipeArc event adds ControllerArcSwipeEvent to the stream', () {
+      final controller = CardSwiperController();
+      const direction = CardSwiperDirection.left;
+      const curve = Curves.easeInOut;
+      expectLater(
+        controller.events,
+        emits(
+          isA<ControllerArcSwipeEvent>()
+              .having((event) => event.direction, 'direction', direction)
+              .having((event) => event.curve, 'curve', curve),
+        ),
+      );
+      controller.swipeArc(direction, curve: curve);
     });
 
     test('Undo event adds ControllerUndoEvent to the stream', () {
@@ -143,5 +159,31 @@ void main() {
 
       expect(find.card(0), findsNothing);
     });
+  });
+
+  testWidgets(
+      'swipeArc should swipe the card in an arc to the specified direction',
+      (tester) async {
+    final controller = CardSwiperController();
+    var detectedDirection = CardSwiperDirection.none;
+    await tester.pumpApp(
+      CardSwiper(
+        controller: controller,
+        cardsCount: 10,
+        cardBuilder: genericBuilder,
+        onSwipe: (oldIndex, currentIndex, swipeDirection) {
+          detectedDirection = swipeDirection;
+          return true;
+        },
+      ),
+    );
+    // Use swipeArc to swipe the card in an arc
+    controller.swipeArc(
+      CardSwiperDirection.custom(60),
+      curve: Curves.easeInOut,
+    );
+    await tester.pumpAndSettle();
+    // Expect the card to have been swiped in the specified direction
+    expect(detectedDirection.angle, 60);
   });
 }
