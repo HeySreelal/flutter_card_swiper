@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_card_swiper/src/controller/controller_event.dart';
 
@@ -13,6 +17,17 @@ class CardSwiperController {
   /// Swipe the card to a specific direction.
   void swipe(CardSwiperDirection direction) {
     _eventController.add(ControllerSwipeEvent(direction));
+  }
+
+  /// Swipe the card to a specific direction.
+  ///
+  /// - [direction] defines the direction of the swipe.
+  /// - [curve] defines the curve that will be applied when animating the card's movement in an arc. If null, [Curves.ease] will be used.
+  void swipeArc(
+    CardSwiperDirection direction, {
+    Curve curve = Curves.ease,
+  }) {
+    _eventController.add(ControllerArcSwipeEvent(direction, curve));
   }
 
   // Undo the last swipe

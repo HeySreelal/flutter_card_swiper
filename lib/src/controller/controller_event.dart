@@ -1,3 +1,4 @@
+import 'package:flutter/animation.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 sealed class ControllerEvent {
@@ -16,4 +17,10 @@ class ControllerUndoEvent extends ControllerEvent {
 class ControllerMoveEvent extends ControllerEvent {
   final int index;
   const ControllerMoveEvent(this.index);
+}
+
+class ControllerArcSwipeEvent extends ControllerEvent {
+  final CardSwiperDirection direction;
+  final Curve curve;
+  const ControllerArcSwipeEvent(this.direction, this.curve);
 }

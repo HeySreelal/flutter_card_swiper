@@ -163,6 +163,8 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
   void _controllerListener(ControllerEvent event) {
     return switch (event) {
       ControllerSwipeEvent(:final direction) => _swipe(direction),
+      ControllerArcSwipeEvent(:final direction, :final curve) =>
+        _arcSwipe(direction, curve),
       ControllerUndoEvent() => _undo(),
       ControllerMoveEvent(:final index) => _moveTo(index),
     };
@@ -255,6 +257,13 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
     _swipeType = SwipeType.swipe;
     _detectedDirection = direction;
     _cardAnimation.animate(context, direction);
+  }
+
+  void _arcSwipe(CardSwiperDirection direction, Curve curve) {
+    if (_currentIndex == null) return;
+    _swipeType = SwipeType.swipe;
+    _detectedDirection = direction;
+    _cardAnimation.animateToAngleArc(context, direction, curve);
   }
 
   void _goBack() {

@@ -230,4 +230,56 @@ class CardAnimation {
 
     animationController.forward();
   }
+
+  /// Animates the card to the specified direction using an arc-like motion.
+  void animateToAngleArc(
+    BuildContext context,
+    CardSwiperDirection direction,
+    Curve curve,
+  ) {
+    final size = MediaQuery.of(context).size;
+    // Convert the angle to radians
+    final adjustedAngle = (direction.angle - 90) * (math.pi / 180);
+    final magnitude = size.width;
+    final targetX = magnitude * math.cos(adjustedAngle);
+    final targetY = magnitude * math.sin(adjustedAngle);
+    // Add control point for an arc
+    final midX = left + (targetX - left) / 2;
+    // Arc height will be dependant on this.
+    final midY = top + (targetY - top) / 2 - 100;
+    _leftAnimation = TweenSequence([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: left, end: midX)
+            .chain(CurveTween(curve: curve)),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: midX, end: targetX)
+            .chain(CurveTween(curve: curve)),
+        weight: 50,
+      ),
+    ]).animate(animationController);
+    _topAnimation = TweenSequence([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: top, end: midY)
+            .chain(CurveTween(curve: curve)),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: midY, end: targetY)
+            .chain(CurveTween(curve: curve)),
+        weight: 50,
+      ),
+    ]).animate(animationController);
+    // Scale and difference animations remain the same
+    _scaleAnimation = Tween<double>(
+      begin: scale,
+      end: 1.0,
+    ).chain(CurveTween(curve: curve)).animate(animationController);
+    _differenceAnimation = Tween<Offset>(
+      begin: difference,
+      end: initialOffset,
+    ).chain(CurveTween(curve: curve)).animate(animationController);
+    animationController.forward();
+  }
 }
